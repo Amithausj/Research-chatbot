@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Assistant Chatbot</title>
+	    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #chatbox {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow-y: scroll;
+            background-color: #f9f9f9;
+        }
+        #query-form {
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        p {
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background-color: #e1f5fe;
+            text-align: left;
+        }
+        .bot-response {
+            background-color: #e8f5e9;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Research Assistant Chatbot</h1>
+	<h3> <center> © 2025 : Department of Information Technology, FMSC, USJ </center> </h3>
+    <div id="chatbox"></div>
+
+    <form id="query-form">
+        <input type="text" id="query" placeholder="Type a word to search..." required />
+        <input type="submit" value="Send" />
+    </form>
+
+    <script>
+        // JavaScript to handle form submission and display the chatbot response
+        document.getElementById('query-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let query = document.getElementById('query').value;
+
+            // Display the user's message in the chatbox
+            let chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML += `<p class="user-message"><strong>You:</strong> ${query}</p>`;
+
+            // Clear the input field after submitting
+            document.getElementById('query').value = '';
+
+            // Send the query to the Flask app and handle the response
+            fetch('/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `query=${query}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                let responseHTML = `<p class="bot-response"><strong>Chatbot:</strong></p>`;
+
+                // Check if results are found
+                if (data.response === "Sorry, no research found for your query.") {
+                    responseHTML += `<p>${data.response}</p>`;
+                } else {
+                    // Display results in a table format
+                    responseHTML += `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Keywords</th>
+                                    <th>Year</th>
+                                    <th>Student</th>
+                                    <th>Supervisor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.response}
+                            </tbody>
+                        </table>
+                    `;
+                }
+
+                chatbox.innerHTML += responseHTML;
+                chatbox.scrollTop = chatbox.scrollHeight;  // Scroll to the bottom
+            })
+            .catch(error => {
+                // Handle error if any
+                chatbox.innerHTML += `<p class="bot-response"><strong>Chatbot:</strong> Sorry, something went wrong. Please try again later.</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            });
+        });
+    </script>
+
+</body>
+</html>
