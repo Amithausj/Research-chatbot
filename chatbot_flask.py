@@ -32,4 +32,10 @@ st.set_page_config(page_title="Research Chatbot", layout="wide")
 
 # Header
 st.markdown("<h1 style='text-align: center; color: darkblue;'>Department of Information Technology, FMSC, USJ</h1>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center;'>📚 Research Chatbot</h2>", unsafe_allow_
+st.markdown("<h2 style='text-align: center;'>📚 Research Chatbot</h2>", unsafe_allow_html=True)
+
+# Load data
+df = load_research_data()
+
+# Load chat history
+if 'chat_history'_
