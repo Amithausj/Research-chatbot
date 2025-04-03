@@ -31,7 +31,7 @@ df = load_research_data()
 
 # Session State to Store Chat History
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+    st.session_state.chat_history = pd.DataFrame(columns=["Query", "Title", "Keywords", "Year", "Student", "Supervisor"])
 
 # --- UI Layout ---
 # Search box & button at the top
@@ -42,30 +42,8 @@ if st.button("Search"):
     if user_query:
         results = search_research(user_query, df)
         if results.empty:
-            response_text = "❌ No matching research found."
-            results_df = pd.DataFrame(columns=["Title", "Keywords", "Year", "Student", "Supervisor"])
+            st.error("❌ No matching research found.")
         else:
-            response_text = "✅ Search Results:"
-            results_df = results  # Display the filtered results in a table format
-
-        # Save to chat history
-        st.session_state.chat_history.append((user_query, results_df))
-    else:
-        st.warning("⚠️ Please enter a query.")
-
-# --- Display Search Results (Table) ---
-st.markdown("---")
-st.markdown("### 📊 Search Results")
-if st.session_state.chat_history:
-    last_query, last_results = st.session_state.chat_history[-1]
-    st.write(f"**You: {last_query}**")
-    if last_results.empty:
-        st.error("❌ No matching research found.")
-    else:
-        st.dataframe(last_results)  # Display results in a table format
-
-# Footer
-st.markdown(
-    "<hr><p style='text-align: center;'>© 2025 : Department of Information Technology, FMSC, USJ</p>",
-    unsafe_allow_html=True,
-)
+            # Add user query and results to chat history
+            results.insert(0, "Query", user_query)  # Add query as first column
+            st.session_state_
