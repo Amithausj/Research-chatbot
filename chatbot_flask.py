@@ -38,4 +38,46 @@ st.markdown("<h2 style='text-align: center;'>📚 Research Chatbot</h2>", unsafe
 df = load_research_data()
 
 # Load chat history
-if 'chat_history'_
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = load_chat_history()
+
+# --- UI Layout ---
+st.markdown("### 🔍 Ask about research topics:")
+user_query = st.text_input("Enter your question:")
+
+if st.button("Search"):
+    if user_query:
+        results = search_research(user_query, df)
+        
+        if results.empty:
+            st.error("❌ No matching research found.")
+            new_entry = pd.DataFrame([[user_query, "No Results", "", "", "", ""]], 
+                                     columns=["Query", "Title", "Keywords", "Year", "Student", "Supervisor"])
+        else:
+            results.insert(0, "Query", user_query)
+            new_entry = results
+
+        # Append new results to history and save
+        st.session_state.chat_history = pd.concat([new_entry, st.session_state.chat_history], ignore_index=True)
+        save_chat_history(st.session_state.chat_history)
+
+# --- Display Chat History in Table Format ---
+st.markdown("---")
+st.markdown("### 🗂️ Chat History")
+if not st.session_state.chat_history.empty:
+    st.dataframe(st.session_state.chat_history)
+else:
+    st.info("Chat history is empty. Start searching!")
+
+# --- Clear History Button ---
+if st.button("Clear History"):
+    # Clear session state and history file
+    st.session_state.chat_history = pd.DataFrame(columns=["Query", "Title", "Keywords", "Year", "Student", "Supervisor"])
+    save_chat_history(st.session_state.chat_history)
+    st.success("Chat history has been cleared!")
+
+    # Refresh the page to show the reset state
+    st.experimental_rerun()
+
+# Footer
+st.markdown("<hr><p style='text-align: center;'>© 2025 : Department of Information Technology, FMSC, USJ</p>", unsafe_allow_html=True)
