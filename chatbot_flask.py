@@ -76,8 +76,5 @@ if st.button("Clear History"):
     save_chat_history(st.session_state.chat_history)
     st.success("Chat history has been cleared!")
 
-    # Refresh the page to show the reset state
-    st.experimental_rerun()
-
 # Footer
 st.markdown("<hr><p style='text-align: center;'>© 2025 : Department of Information Technology, FMSC, USJ</p>", unsafe_allow_html=True)
