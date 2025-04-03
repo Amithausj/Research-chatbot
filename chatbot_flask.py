@@ -15,7 +15,7 @@ def search_research(query, df):
 
 # Streamlit UI
 st.title("📚 Research Chatbot")
-st.title("© 2025 : Department of Information Technology, FMSC, USJ")
+st.body("© 2025 : Department of Information Technology, FMSC, USJ")
 
 # Load the data
 df = load_research_data()
