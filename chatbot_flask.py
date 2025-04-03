@@ -38,7 +38,8 @@ st.markdown("<h2 style='text-align: center;'>📚 Research Chatbot</h2>", unsafe
 df = load_research_data()
 
 # Load chat history
-st.session_state.chat_history = load_chat_history()
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = load_chat_history()
 
 # --- UI Layout ---
 st.markdown("### 🔍 Ask about research topics:")
@@ -67,6 +68,13 @@ if not st.session_state.chat_history.empty:
     st.dataframe(st.session_state.chat_history)
 else:
     st.info("Chat history is empty. Start searching!")
+
+# --- Clear History Button ---
+if st.button("Clear History"):
+    # Clear session state and history file
+    st.session_state.chat_history = pd.DataFrame(columns=["Query", "Title", "Keywords", "Year", "Student", "Supervisor"])
+    save_chat_history(st.session_state.chat_history)
+    st.success("Chat history has been cleared!")
 
 # Footer
 st.markdown("<hr><p style='text-align: center;'>© 2025 : Department of Information Technology, FMSC, USJ</p>", unsafe_allow_html=True)
