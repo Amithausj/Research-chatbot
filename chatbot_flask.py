@@ -13,25 +13,53 @@ def search_research(query, df):
     filtered_df = df[df.apply(lambda row: row.astype(str).str.lower().str.contains(query).any(), axis=1)]
     return filtered_df
 
-# Streamlit UI
-st.title("Department of Information Technology, FMSC, USJ")
-st.title("📚 Research Chatbot")
-#st.body("© 2025 : Department of Information Technology, FMSC, USJ")
+# Set page config
+st.set_page_config(page_title="Research Chatbot", layout="wide")
 
-# Load the data
+# Header
+st.markdown(
+    "<h1 style='text-align: center; color: darkblue;'>Department of Information Technology, FMSC, USJ</h1>",
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<h2 style='text-align: center;'>📚 Research Chatbot</h2>",
+    unsafe_allow_html=True,
+)
+
+# Load data
 df = load_research_data()
 
-# User input
-user_query = st.text_input("Ask about research topics:")
+# Session State to Store Chat History
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# --- UI Layout ---
+# Search box & button at the top
+st.markdown("### 🔍 Ask about research topics:")
+user_query = st.text_input("Enter your question:")
 
 if st.button("Search"):
     if user_query:
         results = search_research(user_query, df)
         if results.empty:
-            st.write("❌ No matching research found.")
+            response_text = "❌ No matching research found."
         else:
-            st.write("✅ Search Results:")
-            st.dataframe(results)
-    else:
-        st.write("⚠️ Please enter a query.")
+            response_text = f"✅ Search Results:\n\n{results.to_string(index=False)}"
 
+        # Save to chat history
+        st.session_state.chat_history.append(("You: " + user_query, "Chatbot: " + response_text))
+    else:
+        st.warning("⚠️ Please enter a query.")
+
+# --- Display Chat History ---
+st.markdown("---")
+st.markdown("### 🗨️ Chat History")
+for user, bot in reversed(st.session_state.chat_history):  # Show latest messages first
+    st.write(f"**{user}**")
+    st.info(bot)
+
+# Footer
+st.markdown(
+    "<hr><p style='text-align: center;'>© 2025 : Department of Information Technology, FMSC, USJ</p>",
+    unsafe_allow_html=True,
+)
