@@ -1,11 +1,14 @@
 import streamlit as st
 import pandas as pd
+import os
+
+# File path for storing chat history
+HISTORY_FILE = "chat_history.csv"
 
 # Load research data from CSV
 @st.cache_data
 def load_research_data():
-    df = pd.read_csv('research_data.csv')
-    return df
+    return pd.read_csv('research_data.csv')
 
 # Search function
 def search_research(query, df):
@@ -13,59 +16,57 @@ def search_research(query, df):
     filtered_df = df[df.apply(lambda row: row.astype(str).str.lower().str.contains(query).any(), axis=1)]
     return filtered_df
 
+# Load chat history from file
+def load_chat_history():
+    if os.path.exists(HISTORY_FILE):
+        return pd.read_csv(HISTORY_FILE)
+    else:
+        return pd.DataFrame(columns=["Query", "Title", "Keywords", "Year", "Student", "Supervisor"])
+
+# Save chat history to file
+def save_chat_history(chat_history):
+    chat_history.to_csv(HISTORY_FILE, index=False)
+
 # Set page config
 st.set_page_config(page_title="Research Chatbot", layout="wide")
 
 # Header
-st.markdown(
-    "<h1 style='text-align: center; color: darkblue;'>Department of Information Technology, FMSC, USJ</h1>",
-    unsafe_allow_html=True,
-)
-st.markdown(
-    "<h2 style='text-align: center;'>📚 Research Chatbot</h2>",
-    unsafe_allow_html=True,
-)
+st.markdown("<h1 style='text-align: center; color: darkblue;'>Department of Information Technology, FMSC, USJ</h1>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>📚 Research Chatbot</h2>", unsafe_allow_html=True)
 
 # Load data
 df = load_research_data()
 
-# Session State to Store Chat History
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
+# Load chat history
+st.session_state.chat_history = load_chat_history()
 
 # --- UI Layout ---
-# Search box & button at the top
 st.markdown("### 🔍 Ask about research topics:")
 user_query = st.text_input("Enter your question:")
 
 if st.button("Search"):
     if user_query:
         results = search_research(user_query, df)
+        
         if results.empty:
-            response_text = "❌ No matching research found."
-            results_df = pd.DataFrame(columns=["Title", "Keywords", "Year", "Student", "Supervisor"])
+            st.error("❌ No matching research found.")
+            new_entry = pd.DataFrame([[user_query, "No Results", "", "", "", ""]], 
+                                     columns=["Query", "Title", "Keywords", "Year", "Student", "Supervisor"])
         else:
-            response_text = "✅ Search Results:"
-            results_df = results  # Display the filtered results in a table format
+            results.insert(0, "Query", user_query)
+            new_entry = results
 
-        # Save to chat history
-        st.session_state.chat_history.append((user_query, results_df))
-    else:
-        st.warning("⚠️ Please enter a query.")
+        # Append new results to history and save
+        st.session_state.chat_history = pd.concat([st.session_state.chat_history, new_entry], ignore_index=True)
+        save_chat_history(st.session_state.chat_history)
 
-# --- Display Search Results (Table) ---
+# --- Display Chat History in Table Format ---
 st.markdown("---")
-st.markdown("### 📊 Search Results")
-if st.session_state.chat_history:
-    last_query, last_results = st.session_state.chat_history[-1]
-    st.write(f"**You: {last_query}**")
-    if last_results.empty:
-        st.error("❌ No matching research found.")
-    else:
-        st.dataframe(last_results)  # Display results in a table format
+st.markdown("### 🗂️ Chat History")
+if not st.session_state.chat_history.empty:
+    st.dataframe(st.session_state.chat_history)
+else:
+    st.info("Chat history is empty. Start searching!")
 
 # Footer
-st.markdown(
-    "<hr><p style='text-align: center;'>© 2025 : Department of Information Technology, FMSC, USJ</p>",
-    unsafe_allow_html=True,
-)
+st.markdown("<hr><p style='text-align: center;'>© 2025 : Department of Information Technology, FMSC, USJ</p>", unsafe_allow_html=True)
