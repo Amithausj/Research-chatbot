@@ -57,7 +57,7 @@ if st.button("Search"):
             new_entry = results
 
         # Append new results to history and save
-        st.session_state.chat_history = pd.concat([st.session_state.chat_history, new_entry], ignore_index=True)
+        st.session_state.chat_history = pd.concat([new_entry, st.session_state.chat_history], ignore_index=True)
         save_chat_history(st.session_state.chat_history)
 
 # --- Display Chat History in Table Format ---
