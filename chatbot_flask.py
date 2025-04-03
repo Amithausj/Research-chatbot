@@ -43,20 +43,26 @@ if st.button("Search"):
         results = search_research(user_query, df)
         if results.empty:
             response_text = "❌ No matching research found."
+            results_df = pd.DataFrame(columns=["Title", "Keywords", "Year", "Student", "Supervisor"])
         else:
-            response_text = f"✅ Search Results:\n\n{results.to_string(index=False)}"
+            response_text = "✅ Search Results:"
+            results_df = results  # Display the filtered results in a table format
 
         # Save to chat history
-        st.session_state.chat_history.append(("You: " + user_query, "Chatbot: " + response_text))
+        st.session_state.chat_history.append((user_query, results_df))
     else:
         st.warning("⚠️ Please enter a query.")
 
-# --- Display Chat History ---
+# --- Display Search Results (Table) ---
 st.markdown("---")
-st.markdown("### 🗨️ Chat History")
-for user, bot in reversed(st.session_state.chat_history):  # Show latest messages first
-    st.write(f"**{user}**")
-    st.info(bot)
+st.markdown("### 📊 Search Results")
+if st.session_state.chat_history:
+    last_query, last_results = st.session_state.chat_history[-1]
+    st.write(f"**You: {last_query}**")
+    if last_results.empty:
+        st.error("❌ No matching research found.")
+    else:
+        st.dataframe(last_results)  # Display results in a table format
 
 # Footer
 st.markdown(
