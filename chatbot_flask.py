@@ -27,8 +27,7 @@ def get_research_info(query, data):
                     <td>{row['Keywords']}</td>
                     <td>{row['Year']}</td>
                     <td>{row['Student']}</td>
-                    <td>{row['Supervisor']}</td>
-                     <td>{row['Type']}</td>
+                    <td>{row['Supervisor']}</td>                  
                 </tr>
             """
         return table_rows
