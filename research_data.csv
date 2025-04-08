@@ -1,11 +1,11 @@
-Title,Keywords,Year,Student,Supervisor
-AI in Healthcare,"AI, Healthcare, Machine Learning",2023,John Doe,Dr. Smith
-Blockchain for Supply Chain,"Blockchain, Supply Chain, Security",2022,Alice Johnson,Prof. Lee
-Data Analytics for Business,"Data Analytics, Business, Python",2023,Robert Brown,Dr. Williams
-Cybersecurity in Financial Systems,"Cybersecurity, Financial Systems, Security",2021,Emily White,Prof. Taylor
-Cloud Computing for Education,"Cloud Computing, Education, Learning",2022,David Green,Dr. Davis
-Natural Language Processing in AI,"NLP, AI, Machine Learning",2023,Susan Clark,Dr. Harris
-Big Data in Healthcare,"Big Data, Healthcare, Analytics",2022,James Miller,Prof. Scott
-IoT in Smart Cities,"IoT, Smart Cities, Technology",2023,Lisa Moore,Dr. Harris
-AI for Predictive Analytics,"AI, Predictive Analytics, Machine Learning",2022,William Hall,Prof. Brown
-Blockchain in Voting Systems,"Blockchain, Voting, Security",2021,Olivia Taylor,Dr. Clark
+Title,Keywords,Year,Student,Supervisor,Type
+AI in Healthcare,"AI, Healthcare, Machine Learning",2023,John Doe,Dr. Smith,Research
+Blockchain for Supply Chain,"Blockchain, Supply Chain, Security",2022,Alice Johnson,Prof. Lee,Research
+Data Analytics for Business,"Data Analytics, Business, Python",2023,Robert Brown,Dr. Williams,Research
+Cybersecurity in Financial Systems,"Cybersecurity, Financial Systems, Security",2021,Emily White,Prof. Taylor,Research
+Cloud Computing for Education,"Cloud Computing, Education, Learning",2022,David Green,Dr. Davis,Research
+Natural Language Processing in AI,"NLP, AI, Machine Learning",2023,Susan Clark,Dr. Harris,Project
+Big Data in Healthcare,"Big Data, Healthcare, Analytics",2022,James Miller,Prof. Scott,Project
+IoT in Smart Cities,"IoT, Smart Cities, Technology",2023,Lisa Moore,Dr. Harris,Project
+AI for Predictive Analytics,"AI, Predictive Analytics, Machine Learning",2022,William Hall,Prof. Brown,Project
+Blockchain in Voting Systems,"Blockchain, Voting, Security",2021,Olivia Taylor,Dr. Clark,Project
