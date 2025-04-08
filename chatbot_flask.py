@@ -1,61 +1,61 @@
 import pandas as pd
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from flask import Flask, render_template, request, jsonify
 
-# Step 1: Load the research data from Google Sheets
+# Step 1: Load the research data from the CSV file
 def load_research_data():
-    # Define the scope of the access
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-
-    # Authenticate using the service account
-    creds = ServiceAccountCredentials.from_json_keyfile_name("path/to/your/credentials.json", scope)
-    client = gspread.authorize(creds)
-
-    # Open the Google Sheet by its ID
-    sheet_id = "1hW_bA68L51QeNLtgM7t8bOc5X02ZtnUuX6uHiBM5M5Q"
-    sheet = client.open_by_key(sheet_id).sheet1  # Access the first sheet (replace if needed)
-
-    # Get all records from the sheet
-    data = sheet.get_all_records()
-
-    # Convert the data to a pandas DataFrame
-    return pd.DataFrame(data)
+    # Load the CSV file into a pandas DataFrame
+    return pd.read_csv('research_data.csv')
 
 # Step 2: Define the function to search all columns
 def get_research_info(query, data):
     # Convert the query to lowercase to ensure case-insensitive matching
     query = query.lower()
 
-    # Step 2.1: Search across all columns in the DataFrame
-    # We check if the query appears in any column (case-insensitive)
+    # Search across all columns in the DataFrame
     results = data.apply(lambda row: row.astype(str).str.contains(query, case=False).any(), axis=1)
 
-    # Step 2.2: Filter results and return them
+    # Filter results
     filtered_data = data[results]
 
     if not filtered_data.empty:
-        return filtered_data.to_string(index=False)  # Return the found data as string (formatted)
+        # Generate HTML table rows from the filtered data
+        table_rows = ""
+        for _, row in filtered_data.iterrows():
+            table_rows += f"""
+                <tr>
+                    <td>{row['Title']}</td>
+                    <td>{row['Keywords']}</td>
+                    <td>{row['Year']}</td>
+                    <td>{row['Student']}</td>
+                    <td>{row['Supervisor']}</td>
+                </tr>
+            """
+        return table_rows
     else:
         return "Sorry, no research found for your query."
 
-# Step 3: Define the chatbot logic
-def chatbot():
-    print("Hello! I am your research assistant chatbot. Type 'quit' to exit.")
 
-    # Load research data into the bot
+# Step 3: Set up Flask
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    # Display the chatbot page
+    return render_template('chatbot.html')
+
+@app.route('/ask', methods=['POST'])
+def ask():
+    # Get the user query from the request
+    user_query = request.form['query'].lower()
+
+    # Load the research data
     data = load_research_data()
 
-    while True:
-        # Ask user for input
-        query = input("You: ").lower()
+    # Get the chatbot's response based on the query
+    response = get_research_info(user_query, data)
 
-        if query == 'quit':
-            print("Chatbot: Goodbye!")
-            break
-
-        # Search for research topics matching the query
-        response = get_research_info(query, data)
-        print(f"Chatbot: {response}")
+    # Return the response as a JSON object to be displayed on the webpage
+    return jsonify({'response': response})
 
 if __name__ == "__main__":
-    chatbot()
+    app.run(debug=True)
